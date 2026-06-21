@@ -118,7 +118,7 @@ class RoleCreateModal(discord.ui.Modal, title='ロール作成'):
 
 # 権限選択ドロップダウン
 class PermissionSelect(discord.ui.Select):
-    def __init__(self, permissions):
+    def __init__(self, permissions, placeholder: str):
         options = [
             discord.SelectOption(
                 label=PERMISSION_TRANSLATIONS.get(perm, perm.replace('_', ' ').title()),
@@ -126,11 +126,10 @@ class PermissionSelect(discord.ui.Select):
             )
             for perm in permissions
         ]
-        super().__init__(placeholder='権限を選択...', min_values=0, max_values=len(options), options=options)
+        super().__init__(placeholder=placeholder, min_values=0, max_values=len(options), options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        # 選択された権限をビューに保存
-        self.view.selected_permissions = self.values
+        # 選択を承認するだけで、集約はボタンで行う
         await interaction.response.defer()
 
 
@@ -142,24 +141,36 @@ class PermissionSelectView(discord.ui.View):
         self.role_color = role_color
         self.mentionable = mentionable
         self.hoist = hoist
-        self.selected_permissions = []
 
-        # Discordで利用可能な権限リスト
-        all_permissions = [p for p in dir(discord.Permissions) if not p.startswith('_') and p not in ['none', 'all', 'value']]
+        # Discordで利用可能な権限リストをソート
+        all_permissions = sorted([p for p in dir(discord.Permissions) if not p.startswith('_') and p not in ['none', 'all', 'value']])
         
-        self.add_item(PermissionSelect(all_permissions))
+        # 権限を25個ずつのチャンクに分割
+        chunk_size = 25
+        permission_chunks = [all_permissions[i:i + chunk_size] for i in range(0, len(all_permissions), chunk_size)]
 
-    @discord.ui.button(label='ロール作成', style=discord.ButtonStyle.primary)
+        # チャンクごとにSelectメニューを作成
+        for i, chunk in enumerate(permission_chunks):
+            if i < 5:  # Viewには最大5つのSelectメニューしか追加できない
+                self.add_item(PermissionSelect(chunk, placeholder=f'権限を選択 ({i+1}/{len(permission_chunks)})'))
+
+    @discord.ui.button(label='ロール作成', style=discord.ButtonStyle.primary, row=4)
     async def create_role_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         guild = interaction.guild
         if not guild:
             await interaction.response.send_message("サーバー内でのみロールを作成できます。", ephemeral=True)
             return
 
+        # すべてのSelectメニューから選択された権限を集約
+        selected_permissions = set()
+        for component in self.children:
+            if isinstance(component, discord.ui.Select):
+                selected_permissions.update(component.values)
+
         try:
             # 権限オブジェクトの作成
             perms = discord.Permissions.none()
-            for perm_name in self.selected_permissions:
+            for perm_name in selected_permissions:
                 setattr(perms, perm_name, True)
 
             # ロールの作成
