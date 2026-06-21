@@ -13,14 +13,14 @@ def create_gradient_palette():
 
     for r_idx in range(num_rows): # 行 (明度と彩度を変化させる)
         # 明度と彩度を画像に合わせて調整 (再調整)
-        # 明度: 上から下へ明るい色から暗い色へ線形に変化 (0.98 -> 0.02)
-        lightness = 0.98 - (r_idx / (num_rows - 1)) * 0.96
+        # 明度: 上から下へ明るい色から暗い色へ線形に変化 (0.95 -> 0.05)
+        lightness = 0.95 - (r_idx / (num_rows - 1)) * 0.9
 
-        # 彩度: 上下で低く、中央で高くなるように変化 (0.05 -> 1.0 -> 0.05)
+        # 彩度: 上下で低く、中央で高くなるように変化 (0.1 -> 1.0 -> 0.1)
         # 中央の行を特定
         mid_row = (num_rows - 1) / 2
         # 中央からの距離に基づいて彩度を調整
-        current_saturation = 0.05 + (1 - abs((r_idx - mid_row) / mid_row)) * 0.95
+        current_saturation = 0.1 + (1 - abs((r_idx - mid_row) / mid_row)) * 0.9
         
         lightness = max(0.0, min(1.0, lightness)) # 0.0から1.0の範囲にクランプ
         current_saturation = max(0.0, min(1.0, current_saturation)) # 0.0から1.0の範囲にクランプ
@@ -46,7 +46,7 @@ def create_palette_image():
     COLOR_PALETTE = create_gradient_palette() # 動的にパレットを生成
     cell_size = 60
     margin = 5
-    cols = 10 # 10列に変更
+    cols = 20 # 20列に変更 (生成されるパレットの列数に合わせる)
     rows = (len(COLOR_PALETTE) + cols - 1) // cols
     
     # 行数が多すぎる場合は調整
