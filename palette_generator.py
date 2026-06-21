@@ -9,7 +9,7 @@ def create_gradient_palette():
     num_cols = 20 # 色相変化用 (横軸)
 
     palette = {}
-    row_chars = "ABCDEFGHIJ" # 10行分の識別子
+    row_chars = "ABCDEFGHIJKLMNOPQRSTU" # 21行分の識別子
 
     for r_idx in range(num_rows): # 行 (明度と彩度を変化させる)
         # 明度: 上端と下端で暗く、中央で明るくなるように調整
