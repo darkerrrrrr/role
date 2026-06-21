@@ -168,7 +168,7 @@ class RoleCreateModal(discord.ui.Modal, title='ロール作成'):
         palette_file = discord.File(fp=palette_image_buffer, filename="palette.png")
 
         palette_embed = discord.Embed(
-            title="ステップ2: 色の選択",
+            title="色の選択",
             description="表示されたパレットから使用したい色の識別番号（例: A1）を覚えて、「色を選択」ボタンを押してください。",
             color=discord.Color.blue()
         )
