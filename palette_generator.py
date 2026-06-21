@@ -20,7 +20,7 @@ def create_gradient_palette():
         distance_from_mid = abs(r_idx - mid_r_idx)
         
         # 最大彩度 (0.95) を中央で、最小彩度 (0.05) を上下端で
-        min_sat = 0.02
+        min_sat = 0.005
         max_sat = 1.0
         current_saturation = max_sat - (distance_from_mid / mid_r_idx) * (max_sat - min_sat)
         # 彩度がmin_sat未満にならないようにする
