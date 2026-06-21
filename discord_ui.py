@@ -135,16 +135,16 @@ class RoleCreateModal(discord.ui.Modal, title='ロール作成'):
         required=True,
     )
     mentionable = discord.ui.TextInput(
-        label='メンション可否',
-        placeholder='はい または いいえ を入力',
+        label='このロールに対して@mentionを許可する',
+        placeholder='許可する または 許可しない を入力',
         required=False,
-        max_length=3,
+        max_length=10,
     )
     hoist = discord.ui.TextInput(
-        label='表示の分離',
-        placeholder='はい または いいえ を入力',
+        label='オンラインメンバーとは別にロールメンバーを表示する',
+        placeholder='表示する または 表示しない を入力',
         required=False,
-        max_length=3,
+        max_length=10,
     )
 
     async def on_submit(self, interaction: discord.Interaction):
@@ -152,8 +152,16 @@ class RoleCreateModal(discord.ui.Modal, title='ロール作成'):
         mentionable_str = self.mentionable.value.lower()
         hoist_str = self.hoist.value.lower()
 
-        is_mentionable = mentionable_str in ['はい', 'yes', 'true']
-        is_hoist = hoist_str in ['はい', 'yes', 'true']
+        is_mentionable = False
+        if mentionable_str in ['はい', 'yes', 'true', '許可する']:
+            is_mentionable = True
+        elif mentionable_str in ['いいえ', 'no', 'false', '許可しない']:
+            is_mentionable = False
+        is_hoist = False
+        if hoist_str in ['はい', 'yes', 'true', '表示する']:
+            is_hoist = True
+        elif hoist_str in ['いいえ', 'no', 'false', '表示しない']:
+            is_hoist = False
 
         # 色パレット画像を生成して送信
         palette_image_buffer = create_palette_image()
@@ -259,8 +267,8 @@ class PermissionSelectView(discord.ui.View):
             )
             success_embed.add_field(name="ロール名", value=new_role.name, inline=True)
             success_embed.add_field(name="カラー", value=str(new_role.color), inline=True)
-            success_embed.add_field(name="メンション可否", value="はい" if new_role.mentionable else "いいえ", inline=True)
-            success_embed.add_field(name="表示の分離", value="はい" if new_role.hoist else "いいえ", inline=True)
+            success_embed.add_field(name="このロールに対して@mentionを許可する", value="許可する" if new_role.mentionable else "許可しない", inline=True)
+            success_embed.add_field(name="オンラインメンバーとは別にロールメンバーを表示する", value="表示する" if new_role.hoist else "表示しない", inline=True)
             success_embed.add_field(name="付与された権限数", value=f"{len(selected_permissions)}個", inline=False)
 
             # 選択された権限のリストを作成
