@@ -377,8 +377,8 @@ class PermissionSelectView(discord.ui.View):
 
             # ロールの作成
             new_role = await guild.create_role(
-                name=self.role_name.value,
-                color=role_color_value,
+                name=self.role_name,
+                color=self.role_color,
                 permissions=perms,
                 mentionable=self.mentionable,
                 hoist=self.hoist
