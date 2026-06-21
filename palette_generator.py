@@ -5,7 +5,7 @@ import colorsys
 # グラデーションパレットを生成する関数
 def create_gradient_palette():
     palette = {}
-    num_rows = 15 # 明度と彩度変化用 (縦軸)
+    num_rows = len(row_chars) # 明度と彩度変化用 (縦軸)
     num_cols = 20 # 色相変化用 (横軸)
 
     palette = {}
