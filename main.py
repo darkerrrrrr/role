@@ -112,7 +112,12 @@ class RoleCreateModal(discord.ui.Modal, title='ロール作成'):
         # カラーコードのバリデーション
         color_hex = self.role_color.value
         if color_hex and not re.match(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', color_hex):
-            await interaction.response.send_message('無効なカラーコードです。Hex形式（例: #FF5733）で入力してください。', ephemeral=True)
+            error_embed = discord.Embed(
+                title="エラー",
+                description='無効なカラーコードです。Hex形式（例: #FF5733）で入力してください。',
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=error_embed, ephemeral=True)
             return
 
         # 真偽値の変換
@@ -127,7 +132,12 @@ class RoleCreateModal(discord.ui.Modal, title='ロール作成'):
             color = discord.Color(int(color_hex.lstrip('#'), 16))
 
         # 権限選択ビューを表示
-        await interaction.response.send_message('次に、ロールに付与する権限を選択してください。', view=PermissionSelectView(
+        permission_prompt_embed = discord.Embed(
+            title="権限の選択",
+            description='次に、ロールに付与する権限を選択してください。',
+            color=discord.Color.blue()
+        )
+        await interaction.response.send_message(embed=permission_prompt_embed, view=PermissionSelectView(
             role_name=self.role_name.value,
             role_color=color,
             mentionable=is_mentionable,
@@ -176,7 +186,12 @@ class PermissionSelectView(discord.ui.View):
     async def create_role_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         guild = interaction.guild
         if not guild:
-            await interaction.response.send_message("サーバー内でのみロールを作成できます。", ephemeral=True)
+            error_embed = discord.Embed(
+                title="エラー",
+                description="サーバー内でのみロールを作成できます。",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=error_embed, ephemeral=True)
             return
 
         # すべてのSelectメニューから選択された権限を集約
@@ -199,11 +214,46 @@ class PermissionSelectView(discord.ui.View):
                 mentionable=self.mentionable,
                 hoist=self.hoist
             )
-            await interaction.response.send_message(f'ロール「{new_role.name}」を作成しました！', ephemeral=True)
+
+            # ロール作成成功メッセージをEmbedで送信
+            success_embed = discord.Embed(
+                title="ロール作成完了！",
+                description=f"ロール `{new_role.name}` が正常に作成されました。",
+                color=new_role.color
+            )
+            success_embed.add_field(name="ロール名", value=new_role.name, inline=True)
+            success_embed.add_field(name="カラー", value=str(new_role.color), inline=True)
+            success_embed.add_field(name="メンション可否", value="はい" if new_role.mentionable else "いいえ", inline=True)
+            success_embed.add_field(name="表示の分離", value="はい" if new_role.hoist else "いいえ", inline=True)
+            success_embed.add_field(name="付与された権限数", value=f"{len(selected_permissions)}個", inline=False)
+
+            # 選択された権限のリストを作成
+            translated_perms_list = []
+            if selected_permissions:
+                for perm_name in sorted(list(selected_permissions)):
+                    translated_perms_list.append(PERMISSION_TRANSLATIONS.get(perm_name, perm_name.replace('_', ' ').title()))
+                perms_display = "\n".join(translated_perms_list)
+            else:
+                perms_display = "なし"
+
+            success_embed.add_field(name="付与された権限", value=perms_display, inline=False)
+            
+            await interaction.followup.send(embed=success_embed, ephemeral=True)
+
         except discord.Forbidden:
-            await interaction.response.send_message('ボットにロールを管理する権限がありません。', ephemeral=True)
+            error_embed = discord.Embed(
+                title="エラー",
+                description="ロールを作成するための権限がありません。",
+                color=discord.Color.red()
+            )
+            await interaction.followup.send(embed=error_embed, ephemeral=True)
         except Exception as e:
-            await interaction.response.send_message(f'エラーが発生しました: {e}', ephemeral=True)
+            error_embed = discord.Embed(
+                title="エラー",
+                description=f"ロールの作成中にエラーが発生しました: {e}",
+                color=discord.Color.red()
+            )
+            await interaction.followup.send(embed=error_embed, ephemeral=True)
         
         self.stop()
 
