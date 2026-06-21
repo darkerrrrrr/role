@@ -19,10 +19,12 @@ def create_gradient_palette():
         mid_r_idx = (num_rows - 1) / 2.0
         distance_from_mid = abs(r_idx - mid_r_idx)
         
-        # 最大彩度 (0.95) を中央で、最小彩度 (0.05) を上下端で
-        current_saturation = 0.95 - (distance_from_mid / mid_r_idx) * (0.95 - 0.05)
-        # 彩度が0.05未満にならないようにする
-        current_saturation = max(0.05, current_saturation)
+        # 最大彩度 (0.9) を中央で、最小彩度 (0.1) を上下端で
+        min_sat = 0.1
+        max_sat = 0.9
+        current_saturation = max_sat - (distance_from_mid / mid_r_idx) * (max_sat - min_sat)
+        # 彩度がmin_sat未満にならないようにする
+        current_saturation = max(min_sat, current_saturation)
 
         for c_idx in range(num_cols): # 列 (色相を変化させる)
             # 色相: 左から右へ均等に変化 (0.0から<1.0)
