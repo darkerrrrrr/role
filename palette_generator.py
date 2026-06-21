@@ -5,26 +5,28 @@ import colorsys
 # グラデーションパレットを生成する関数
 def create_gradient_palette():
     palette = {}
-    row_chars = "ABCDEFGHIJKLMNOPQRST"  # 20行分の文字
-    num_rows = len(row_chars)
-    num_cols = 10
+    num_rows = 10 # 明度変化用 (縦軸)
+    num_cols = 20 # 色相変化用 (横軸)
 
-    for r_idx in range(num_rows):
-        # 各行の開始色相を決定 (0.0から1.0まで均等に分散)
-        # 例: r_idx=0 -> H=0.0, r_idx=1 -> H=0.1, ...
-        hue = r_idx / num_rows
+    palette = {}
+    row_chars = "ABCDEFGHIJ" # 10行分の識別子
 
-        # 各行の彩度を決定 (ここでは高彩度を維持)
-        saturation = 0.8
+    for r_idx in range(num_rows): # 行 (明度と彩度を変化させる)
+        # 明度: 上の行が明るく (0.95)、下の行が暗く (0.05) なるように線形補間
+        lightness = 0.95 - (0.9 * r_idx / (num_rows - 1))
 
-        for c_idx in range(num_cols):
-            # 明度を計算: 最初の列は非常に暗く、右に行くほど非常に明るく
-            # 0.05から0.95まで線形補間
-            lightness = 0.05 + (0.9 * c_idx / (num_cols - 1))
+        # 彩度: 中央の行が最も鮮やかで、上下に行くほど彩度が落ちるように調整
+        # (num_rows - 1) / 2.0 は中央の行のインデックス (例: 9行なら4.5)
+        mid_r_idx = (num_rows - 1) / 2.0
+        distance_from_mid = abs(r_idx - mid_r_idx)
+        
+        # 最大彩度 (0.9) を中央で、最小彩度 (0.3) を上下端で
+        current_saturation = 0.9 - (distance_from_mid / mid_r_idx) * (0.9 - 0.3)
+        current_saturation = max(0.3, current_saturation) # 彩度が0.3を下回らないようにする
 
-            # 彩度を調整: 最初の列は非常に鮮やか、右に行くほどくすんでいく
-            # 0.9から0.1まで線形補間
-            current_saturation = 0.9 - (0.8 * c_idx / (num_cols - 1))
+        for c_idx in range(num_cols): # 列 (色相を変化させる)
+            # 色相: 左から右へ均等に変化 (0.0から<1.0)
+            hue = c_idx / num_cols
 
             r, g, b = colorsys.hls_to_rgb(hue, lightness, current_saturation)
             r, g, b = int(r * 255), int(g * 255), int(b * 255)
@@ -32,7 +34,7 @@ def create_gradient_palette():
             # 16進数カラーコードに変換
             hex_color = f"#{r:02X}{g:02X}{b:02X}"
             
-            # 識別番号を生成 (例: A1, A2, ..., J10)
+            # 識別番号を生成 (例: A1, A2, ..., J20)
             identifier = f"{row_chars[r_idx]}{c_idx + 1}"
             palette[identifier] = hex_color
             
