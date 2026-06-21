@@ -13,7 +13,7 @@ def create_gradient_palette():
 
     for r_idx in range(num_rows): # 行 (明度と彩度を変化させる)
         # 明度: 上の行が明るく (0.95)、下の行が暗く (0.05) なるように線形補間
-            lightness = 0.95 - (0.9 * r_idx / (num_rows - 1))
+            lightness = 0.98 - (0.96 * r_idx / (num_rows - 1))
 
             # 彩度: 中央の行が最も鮮やかで、上下に行くほど彩度が落ちるように調整
             mid_r_idx = (num_rows - 1) / 2.0
