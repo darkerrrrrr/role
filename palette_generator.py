@@ -13,16 +13,16 @@ def create_gradient_palette():
 
     for r_idx in range(num_rows): # 行 (明度と彩度を変化させる)
         # 明度: 上の行が明るく (0.95)、下の行が暗く (0.05) なるように線形補間
-        lightness = 0.95 - (0.9 * r_idx / (num_rows - 1))
+            lightness = 0.95 - (0.9 * r_idx / (num_rows - 1))
 
-        # 彩度: 中央の行が最も鮮やかで、上下に行くほど彩度が落ちるように調整
-        # (num_rows - 1) / 2.0 は中央の行のインデックス (例: 9行なら4.5)
-        mid_r_idx = (num_rows - 1) / 2.0
-        distance_from_mid = abs(r_idx - mid_r_idx)
-        
-        # 最大彩度 (0.9) を中央で、最小彩度 (0.3) を上下端で
-        current_saturation = 0.9 - (distance_from_mid / mid_r_idx) * (0.9 - 0.3)
-        current_saturation = max(0.3, current_saturation) # 彩度が0.3を下回らないようにする
+            # 彩度: 中央の行が最も鮮やかで、上下に行くほど彩度が落ちるように調整
+            mid_r_idx = (num_rows - 1) / 2.0
+            distance_from_mid = abs(r_idx - mid_r_idx)
+            
+            # 最大彩度 (0.95) を中央で、最小彩度 (0.05) を上下端で
+            current_saturation = 0.95 - (distance_from_mid / mid_r_idx) * (0.95 - 0.05)
+            # 彩度が0.05未満にならないようにする
+            current_saturation = max(0.05, current_saturation)
 
         for c_idx in range(num_cols): # 列 (色相を変化させる)
             # 色相: 左から右へ均等に変化 (0.0から<1.0)
