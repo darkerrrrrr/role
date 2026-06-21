@@ -13,36 +13,14 @@ def create_gradient_palette():
 
     for r_idx in range(num_rows): # 行 (明度と彩度を変化させる)
         # 明度と彩度を画像に合わせて調整 (再調整)
-        if r_idx == 0: # Row A (非常に暗く、彩度も低い)
-            lightness = 0.05
-            current_saturation = 0.1
-        elif r_idx == 1: # Row B (Aより明るく、彩度も少し高い)
-            lightness = 0.15
-            current_saturation = 0.25
-        elif r_idx == 2: # Row C (Bより明るく、彩度も高い)
-            lightness = 0.3
-            current_saturation = 0.5
-        elif r_idx == 3: # Row D (明るく、彩度が高い)
-            lightness = 0.5
-            current_saturation = 0.8
-        elif r_idx == 4: # Row E (非常に明るく、最高彩度)
-            lightness = 0.8
-            current_saturation = 1.0
-        elif r_idx == 5: # Row F (Eと同様に非常に明るく、最高彩度)
-            lightness = 0.8
-            current_saturation = 1.0
-        elif r_idx == 6: # Row G (少し暗くなり、彩度もわずかに下がる)
-            lightness = 0.65
-            current_saturation = 0.95
-        elif r_idx == 7: # Row H (さらに暗くなり、彩度も下がる)
-            lightness = 0.5
-            current_saturation = 0.85
-        elif r_idx == 8: # Row I (かなり暗く、彩度も中程度)
-            lightness = 0.35
-            current_saturation = 0.7
-        elif r_idx == 9: # Row J (最も暗い行の一つだが、色相は残る)
-            lightness = 0.2
-            current_saturation = 0.5
+        # 明度: 上から下へ明るい色から暗い色へ線形に変化 (0.9 -> 0.1)
+        lightness = 0.9 - (r_idx / (num_rows - 1)) * 0.8
+
+        # 彩度: 上下で低く、中央で高くなるように変化 (0.2 -> 1.0 -> 0.2)
+        # 中央の行を特定
+        mid_row = (num_rows - 1) / 2
+        # 中央からの距離に基づいて彩度を調整
+        current_saturation = 0.2 + (1 - abs((r_idx - mid_row) / mid_row)) * 0.8
         
         lightness = max(0.0, min(1.0, lightness)) # 0.0から1.0の範囲にクランプ
         current_saturation = max(0.0, min(1.0, current_saturation)) # 0.0から1.0の範囲にクランプ
