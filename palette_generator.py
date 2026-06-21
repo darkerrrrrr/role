@@ -18,21 +18,16 @@ def create_gradient_palette():
         saturation = 0.8
 
         for c_idx in range(num_cols):
-            # 明度を計算: 最初の列は暗く、最後の列は白に近づく
-            # c_idx=0 (1列目) -> 明度低 (例: 0.2)
-            # c_idx=9 (10列目) -> 明度高 (例: 1.0, 純白)
-            if c_idx == num_cols - 1:
-                # 最後の列は純白
-                r, g, b = 255, 255, 255
-            else:
-                # 明度を0.2から0.9の間で線形補間
-                # 0.2は暗めの色、0.9は明るめの色
-                lightness = 0.2 + (0.7 * c_idx / (num_cols - 1))
-                
-                # HSLをRGBに変換
-                r, g, b = colorsys.hls_to_rgb(hue, lightness, saturation)
-                # 0-255の整数に変換
-                r, g, b = int(r * 255), int(g * 255), int(b * 255)
+            # 明度を計算: 最初の列は暗く、右に行くほど明るく
+            # 0.2から1.0まで線形補間 (1.0は最大明度)
+            lightness = 0.2 + (0.8 * c_idx / (num_cols - 1))
+
+            # 彩度を調整: 明度が上がるにつれて彩度を少し下げる
+            # 0.8から0.6まで線形補間
+            current_saturation = 0.8 - (0.2 * c_idx / (num_cols - 1))
+
+            r, g, b = colorsys.hls_to_rgb(hue, lightness, current_saturation)
+            r, g, b = int(r * 255), int(g * 255), int(b * 255)
             
             # 16進数カラーコードに変換
             hex_color = f"#{r:02X}{g:02X}{b:02X}"
