@@ -5,26 +5,25 @@ import colorsys
 # グラデーションパレットを生成する関数
 def create_gradient_palette():
     palette = {}
-    num_rows = 10 # 明度変化用 (縦軸)
+    num_rows = 21 # 明度と彩度変化用 (縦軸)
     num_cols = 20 # 色相変化用 (横軸)
 
     palette = {}
     row_chars = "ABCDEFGHIJ" # 10行分の識別子
 
     for r_idx in range(num_rows): # 行 (明度と彩度を変化させる)
-        # 明度: 上の行が明るく (0.95)、下の行が暗く (0.05) なるように線形補間
-        lightness = 0.98 - (0.96 * r_idx / (num_rows - 1))
-
-        # 彩度: 中央の行が最も鮮やかで、上下に行くほど彩度が落ちるように調整
+        # 明度: 上端と下端で暗く、中央で明るくなるように調整
         mid_r_idx = (num_rows - 1) / 2.0
-        distance_from_mid = abs(r_idx - mid_r_idx)
-        
-        # 最大彩度 (0.95) を中央で、最小彩度 (0.05) を上下端で
-        min_sat = 0.005
-        max_sat = 1.0
-        current_saturation = max_sat - (distance_from_mid / mid_r_idx) * (max_sat - min_sat)
-        # 彩度がmin_sat未満にならないようにする
-        current_saturation = max(min_sat, current_saturation)
+        min_lightness = 0.1
+        max_lightness = 0.7
+        a = (min_lightness - max_lightness) / (mid_r_idx ** 2)
+        lightness = a * ((r_idx - mid_r_idx) ** 2) + max_lightness
+
+        # 彩度: 上端で低く、下端で高くなるように線形補間
+        min_sat_top = 0.2
+        max_sat_bottom = 1.0
+        current_saturation = min_sat_top + (max_sat_bottom - min_sat_top) * (r_idx / (num_rows - 1))
+        current_saturation = max(0.0, min(1.0, current_saturation)) # 0.0から1.0の範囲にクランプ
 
         for c_idx in range(num_cols): # 列 (色相を変化させる)
             # 色相: 左から右へ均等に変化 (0.0から<1.0)
