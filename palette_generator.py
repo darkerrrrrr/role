@@ -13,14 +13,36 @@ def create_gradient_palette():
 
     for r_idx in range(num_rows): # 行 (明度と彩度を変化させる)
         # 明度と彩度を画像に合わせて調整 (再調整)
-        # 明度: 上から下へ明るい色から暗い色へ線形に変化 (0.99 -> 0.01)
-        lightness = 0.99 - (r_idx / (num_rows - 1)) * 0.98
-
-        # 彩度: 上下で低く、中央で高くなるように変化 (0.01 -> 1.0 -> 0.01)
-        # 中央の行を特定
-        mid_row = (num_rows - 1) / 2
-        # 中央からの距離に基づいて彩度を調整
-        current_saturation = 0.01 + (1 - abs((r_idx - mid_row) / mid_row)) * 0.99
+        if r_idx == 0: # Row A (より白に近く、彩度をさらに低く)
+            lightness = 0.99
+            current_saturation = 0.02
+        elif r_idx == 1: # Row B
+            lightness = 0.90
+            current_saturation = 0.15
+        elif r_idx == 2: # Row C
+            lightness = 0.75
+            current_saturation = 0.35
+        elif r_idx == 3: # Row D
+            lightness = 0.60
+            current_saturation = 0.65
+        elif r_idx == 4: # Row E (鮮やかさを維持しつつ、少し明るめに)
+            lightness = 0.45
+            current_saturation = 1.0
+        elif r_idx == 5: # Row F (鮮やかさを維持しつつ、Eより暗めに)
+            lightness = 0.35
+            current_saturation = 1.0
+        elif r_idx == 6: # Row G
+            lightness = 0.25
+            current_saturation = 0.8
+        elif r_idx == 7: # Row H
+            lightness = 0.15
+            current_saturation = 0.5
+        elif r_idx == 8: # Row I
+            lightness = 0.05
+            current_saturation = 0.15
+        elif r_idx == 9: # Row J (より黒に近く、彩度をさらに低く)
+            lightness = 0.01
+            current_saturation = 0.02
         
         lightness = max(0.0, min(1.0, lightness)) # 0.0から1.0の範囲にクランプ
         current_saturation = max(0.0, min(1.0, current_saturation)) # 0.0から1.0の範囲にクランプ
@@ -68,7 +90,7 @@ def create_palette_image():
         font = ImageFont.load_default()
 
     # 識別番号でソートして表示順を安定させる
-    sorted_items = sorted(COLOR_PALETTE.items(), key=lambda item: (item[0][0], int(item[0][1:])))
+    sorted_items = sorted(COLOR_PALETTE.items(), key=lambda item: (int(item[0][1:]), item[0][0]))
 
     for i, (code, color_hex) in enumerate(sorted_items):
         if i >= cols * rows: # 表示制限を超えたら終了
