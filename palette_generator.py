@@ -11,12 +11,14 @@ def create_gradient_palette():
     palette = {}
     row_chars = "ABCDEFGHIJ" # 10行分の識別子
 
-    lightness_per_row = [0.95, 0.85, 0.75, 0.65, 0.55, 0.45, 0.35, 0.25, 0.15, 0.05]
-    saturation_per_row = [0.10, 0.20, 0.40, 0.60, 0.80, 1.00, 0.80, 0.60, 0.30, 0.10]
-
     for r_idx in range(num_rows): # 行 (明度と彩度を変化させる)
-        lightness = lightness_per_row[r_idx]
-        current_saturation = saturation_per_row[r_idx]
+        # 明度: 上から下へ明るい色から暗い色へ線形に変化 (0.95 -> 0.05)
+        lightness = 0.95 - (r_idx / (num_rows - 1)) * (0.95 - 0.05)
+
+        # 彩度: 上下で低く (0.10)、中央で高く (1.00) なるように変化
+        mid_row = (num_rows - 1) / 2.0
+        distance_from_mid = abs(r_idx - mid_row) / mid_row
+        current_saturation = 1.0 - distance_from_mid * (1.0 - 0.10)
         
         lightness = max(0.0, min(1.0, lightness)) # 0.0から1.0の範囲にクランプ
         current_saturation = max(0.0, min(1.0, current_saturation)) # 0.0から1.0の範囲にクランプ
