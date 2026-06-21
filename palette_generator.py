@@ -5,31 +5,46 @@ import colorsys
 # グラデーションパレットを生成する関数
 def create_gradient_palette():
     palette = {}
-    num_rows = 21 # 明度と彩度変化用 (縦軸)
+    num_rows = 10 # 明度と彩度変化用 (縦軸)
     num_cols = 20 # 色相変化用 (横軸)
 
     palette = {}
-    row_chars = "ABCDEFGHIJKLMNOPQRSTU" # 21行分の識別子
+    row_chars = "ABCDEFGHIJ" # 10行分の識別子
 
     for r_idx in range(num_rows): # 行 (明度と彩度を変化させる)
-        # 明度: 上端と下端で暗く、中央で明るくなるように調整
-        mid_r_idx = (num_rows - 1) / 2.0
-        min_lightness = 0.1
-        max_lightness = 0.7
-        a = (min_lightness - max_lightness) / (mid_r_idx ** 2)
-        lightness = a * ((r_idx - mid_r_idx) ** 2) + max_lightness
-
-        # 彩度: 上の数行は低く、それ以降は高く
-        if r_idx < 3: # 最初の3行は彩度を低く
+        # 明度と彩度を画像に合わせて調整 (再調整)
+        if r_idx == 0: # Row A (非常に暗く、彩度も低い)
+            lightness = 0.05
             current_saturation = 0.1
-        else:
-            # それ以降の行は彩度を高く、下に行くほど少し上げる
-            start_high_sat_idx = 3
-            remaining_rows = num_rows - start_high_sat_idx
-            if remaining_rows > 0:
-                current_saturation = 0.8 + (1.0 - 0.8) * ((r_idx - start_high_sat_idx) / remaining_rows)
-            else:
-                current_saturation = 0.8 # Fallback if only 3 rows or less
+        elif r_idx == 1: # Row B (Aより明るく、彩度も少し高い)
+            lightness = 0.15
+            current_saturation = 0.25
+        elif r_idx == 2: # Row C (Bより明るく、彩度も高い)
+            lightness = 0.3
+            current_saturation = 0.5
+        elif r_idx == 3: # Row D (明るく、彩度が高い)
+            lightness = 0.5
+            current_saturation = 0.8
+        elif r_idx == 4: # Row E (非常に明るく、最高彩度)
+            lightness = 0.8
+            current_saturation = 1.0
+        elif r_idx == 5: # Row F (Eと同様に非常に明るく、最高彩度)
+            lightness = 0.8
+            current_saturation = 1.0
+        elif r_idx == 6: # Row G (少し暗くなり、彩度もわずかに下がる)
+            lightness = 0.65
+            current_saturation = 0.95
+        elif r_idx == 7: # Row H (さらに暗くなり、彩度も下がる)
+            lightness = 0.5
+            current_saturation = 0.85
+        elif r_idx == 8: # Row I (かなり暗く、彩度も中程度)
+            lightness = 0.35
+            current_saturation = 0.7
+        elif r_idx == 9: # Row J (最も暗い行の一つだが、色相は残る)
+            lightness = 0.2
+            current_saturation = 0.5
+        
+        lightness = max(0.0, min(1.0, lightness)) # 0.0から1.0の範囲にクランプ
         current_saturation = max(0.0, min(1.0, current_saturation)) # 0.0から1.0の範囲にクランプ
 
         for c_idx in range(num_cols): # 列 (色相を変化させる)
