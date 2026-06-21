@@ -256,8 +256,8 @@ class PermissionSelectView(discord.ui.View):
                 color=discord.Color.red()
             )
             await interaction.followup.send(embed=error_embed, ephemeral=True)
-        
-        self.stop()
+        finally:
+            self.stop()
 
 
 # Botが起動したときのイベント
