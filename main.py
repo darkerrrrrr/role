@@ -150,7 +150,7 @@ class PermissionSelectView(discord.ui.View):
         self.hoist = hoist
 
         # Discordで利用可能な権限リストをソート
-        all_permissions = sorted([p for p in dir(discord.Permissions) if not p.startswith('_') and p not in ['none', 'all', 'value']])
+        all_permissions = sorted([p for p, v in discord.Permissions.all()])
         
         # 権限を25個ずつのチャンクに分割
         chunk_size = 25
