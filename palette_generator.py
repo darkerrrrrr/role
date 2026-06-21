@@ -5,7 +5,7 @@ import colorsys
 # グラデーションパレットを生成する関数
 def create_gradient_palette():
     palette = {}
-    row_chars = "ABCDEFGHIJ"  # 10行分の文字
+    row_chars = "ABCDEFGHIJKLMNOPQRST"  # 20行分の文字
     num_rows = len(row_chars)
     num_cols = 10
 
@@ -18,13 +18,13 @@ def create_gradient_palette():
         saturation = 0.8
 
         for c_idx in range(num_cols):
-            # 明度を計算: 最初の列は暗く、右に行くほど明るく
-            # 0.2から1.0まで線形補間 (1.0は最大明度)
-            lightness = 0.2 + (0.8 * c_idx / (num_cols - 1))
+            # 明度を計算: 最初の列は非常に暗く、右に行くほど非常に明るく
+            # 0.05から0.95まで線形補間
+            lightness = 0.05 + (0.9 * c_idx / (num_cols - 1))
 
-            # 彩度を調整: 明度が上がるにつれて彩度を少し下げる
-            # 0.8から0.6まで線形補間
-            current_saturation = 0.8 - (0.2 * c_idx / (num_cols - 1))
+            # 彩度を調整: 最初の列は非常に鮮やか、右に行くほどくすんでいく
+            # 0.9から0.1まで線形補間
+            current_saturation = 0.9 - (0.8 * c_idx / (num_cols - 1))
 
             r, g, b = colorsys.hls_to_rgb(hue, lightness, current_saturation)
             r, g, b = int(r * 255), int(g * 255), int(b * 255)
@@ -47,7 +47,7 @@ def create_palette_image():
     rows = (len(COLOR_PALETTE) + cols - 1) // cols
     
     # 行数が多すぎる場合は調整
-    max_rows = 10 # 最大10行に制限
+    max_rows = 20 # 最大20行に制限
     if rows > max_rows:
         rows = max_rows
         # 表示する色数を調整
