@@ -184,6 +184,8 @@ class PermissionSelectView(discord.ui.View):
 
     @discord.ui.button(label='ロール作成', style=discord.ButtonStyle.primary, row=4)
     async def create_role_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer(ephemeral=True, thinking=True)
+
         guild = interaction.guild
         if not guild:
             error_embed = discord.Embed(
