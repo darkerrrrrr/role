@@ -19,6 +19,51 @@ intents.message_content = True
 # Botのインスタンスを作成
 bot = commands.Bot(command_prefix='/', intents=intents)
 
+# 権限の日本語訳
+PERMISSION_TRANSLATIONS = {
+    "add_reactions": "リアクションの追加",
+    "administrator": "管理者",
+    "attach_files": "ファイルを添付",
+    "ban_members": "メンバーをBAN",
+    "change_nickname": "ニックネームの変更",
+    "connect": "接続",
+    "create_instant_invite": "招待を作成",
+    "create_private_threads": "非公開スレッドの作成",
+    "create_public_threads": "公開スレッドの作成",
+    "deafen_members": "メンバーのスピーカーをミュート",
+    "embed_links": "埋め込みリンク",
+    "kick_members": "メンバーをキック",
+    "manage_channels": "チャンネルの管理",
+    "manage_emojis_and_stickers": "絵文字とスタンプの管理",
+    "manage_events": "イベントの管理",
+    "manage_guild": "サーバーの管理",
+    "manage_messages": "メッセージの管理",
+    "manage_nicknames": "ニックネームの管理",
+    "manage_roles": "ロールの管理",
+    "manage_threads": "スレッドの管理",
+    "manage_webhooks": "ウェブフックの管理",
+    "mention_everyone": "@everyone、@here、すべてのロールにメンション",
+    "moderate_members": "メンバーのタイムアウト",
+    "move_members": "メンバーを移動",
+    "mute_members": "メンバーをミュート",
+    "priority_speaker": "優先スピーカー",
+    "read_message_history": "メッセージ履歴を読む",
+    "request_to_speak": "スピーカーをリクエスト",
+    "send_messages": "メッセージを送信",
+    "send_messages_in_threads": "スレッドでメッセージを送信",
+    "send_tts_messages": "TTSメッセージを送信",
+    "speak": "発言",
+    "stream": "配信",
+    "use_application_commands": "アプリケーションコマンドの使用",
+    "use_embedded_activities": "埋め込みアクティビティの開始",
+    "use_external_emojis": "外部の絵文字を使用する",
+    "use_external_stickers": "外部スタンプの使用",
+    "use_vad": "音声検出を使用",
+    "view_audit_log": "監査ログを表示",
+    "view_channel": "チャンネルを表示",
+    "view_guild_insights": "サーバーインサイトの表示",
+}
+
 # ロール作成モーダル
 class RoleCreateModal(discord.ui.Modal, title='ロール作成'):
     role_name = discord.ui.TextInput(
