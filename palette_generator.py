@@ -19,10 +19,17 @@ def create_gradient_palette():
         a = (min_lightness - max_lightness) / (mid_r_idx ** 2)
         lightness = a * ((r_idx - mid_r_idx) ** 2) + max_lightness
 
-        # 彩度: 上端で低く、下端で高くなるように線形補間
-        min_sat_top = 0.2
-        max_sat_bottom = 1.0
-        current_saturation = min_sat_top + (max_sat_bottom - min_sat_top) * (r_idx / (num_rows - 1))
+        # 彩度: 上の数行は低く、それ以降は高く
+        if r_idx < 3: # 最初の3行は彩度を低く
+            current_saturation = 0.1
+        else:
+            # それ以降の行は彩度を高く、下に行くほど少し上げる
+            start_high_sat_idx = 3
+            remaining_rows = num_rows - start_high_sat_idx
+            if remaining_rows > 0:
+                current_saturation = 0.8 + (1.0 - 0.8) * ((r_idx - start_high_sat_idx) / remaining_rows)
+            else:
+                current_saturation = 0.8 # Fallback if only 3 rows or less
         current_saturation = max(0.0, min(1.0, current_saturation)) # 0.0から1.0の範囲にクランプ
 
         for c_idx in range(num_cols): # 列 (色相を変化させる)
