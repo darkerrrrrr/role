@@ -6,6 +6,7 @@ on:
   schedule:
     # 6時間ごとに実行 (UTC)
     - cron: '0 */6 * * *'
+  workflow_dispatch: # 手動実行を可能にする
 
 concurrency:
   group: ${{ github.workflow }}
