@@ -132,7 +132,26 @@ class RoleOptionsButtonsView(discord.ui.View):
             return
 
         try:
-            await interaction.followup.send("デバッグメッセージ: ロールオプションが選択されました。次のステップに進みます。", ephemeral=True)
+            palette_image_buffer = create_palette_image()
+            palette_file = discord.File(fp=palette_image_buffer, filename="palette.png")
+
+            palette_embed = discord.Embed(
+                title="色の選択",
+                description="表示されたパレットから使用したい色の識別番号（例: A1）を覚えて、「色を選択」ボタンを押してください。",
+                color=discord.Color.blue()
+            )
+            palette_embed.set_image(url="attachment://palette.png")
+            
+            await interaction.followup.send_message(
+                embed=palette_embed,
+                file=palette_file,
+                view=ColorPaletteView(
+                    role_name=self.role_name,
+                    mentionable=self.mentionable,
+                    hoist=self.hoist
+                ), 
+                ephemeral=True
+            )
         finally:
             self.stop()
 
@@ -191,7 +210,7 @@ class RoleNameModal(discord.ui.Modal, title='ロール名入力'):
         await interaction.response.send_message(
             embed=discord.Embed(
                 title="ロールオプションの選択",
-                description="作成するロールの基本的な設定を行います。\n\n「メンション可否」と「表示の分離」のボタンでそれぞれ選択し、「次へ」ボタンを押してください。",
+                description="作成するロールの基本的な設定を行います。\n\n**メンション可否:**\n以下のボタンで選択してください。\n\n**表示の分離:**\n以下のボタンで選択してください。\n\n両方選択後、「次へ」ボタンを押してください。",
                 color=discord.Color.blue()
             ),
             view=RoleOptionsButtonsView(role_name=role_name),
