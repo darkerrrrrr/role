@@ -120,7 +120,8 @@ class ColorPaletteView(discord.ui.View):
 
     @discord.ui.button(label='色を選択', style=discord.ButtonStyle.primary)
     async def select_color_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_modal(ColorSelectModal(
+        await interaction.response.defer(ephemeral=True)
+        await interaction.followup.send_modal(ColorSelectModal(
             role_name=self.role_name,
             mentionable=self.mentionable,
             hoist=self.hoist
