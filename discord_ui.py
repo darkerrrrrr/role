@@ -139,6 +139,46 @@ class RoleOptionsView(discord.ui.View):
         self.stop() # View is done after sending the modal
 
 
+# ロール名入力モーダル (RoleOptionsViewの後に表示)
+class RoleNameModal(discord.ui.Modal, title='ロール名入力'):
+    role_name_input = discord.ui.TextInput(
+        label='ロール名',
+        placeholder='新しいロールの名前を入力してください',
+        required=True,
+    )
+
+    def __init__(self, mentionable: bool, hoist: bool):
+        super().__init__()
+        self.mentionable = mentionable
+        self.hoist = hoist
+
+    async def on_submit(self, interaction: discord.Interaction):
+        role_name = self.role_name_input.value
+        
+        # create_palette_image は palette_generator からインポートされていることを確認
+        from palette_generator import create_palette_image
+
+        palette_image_buffer = create_palette_image()
+        palette_file = discord.File(fp=palette_image_buffer, filename="palette.png")
+
+        palette_embed = discord.Embed(
+            title="色の選択",
+            description="表示されたパレットから使用したい色の識別番号（例: A1）を覚えて、「色を選択」ボタンを押してください。",
+            color=discord.Color.blue()
+        )
+        palette_embed.set_image(url="attachment://palette.png")
+        
+        await interaction.response.send_message(
+            embed=palette_embed,
+            file=palette_file,
+            view=ColorPaletteView(
+                role_name=role_name,
+                mentionable=self.mentionable,
+                hoist=self.hoist
+            ), 
+            ephemeral=True
+        )
+
 # 色選択モーダル
 class ColorSelectModal(discord.ui.Modal, title='パレット識別番号入力'):
     color_code = discord.ui.TextInput(
