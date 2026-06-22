@@ -68,7 +68,7 @@ PERMISSION_TRANSLATIONS = {
 }
 
 # 色選択モーダル
-class ColorSelectModal(discord.ui.Modal, title='カラーコード入力'):
+class ColorSelectModal(discord.ui.Modal, title='パレット識別番号入力'):
     color_code = discord.ui.TextInput(
         label='パレットの識別番号',
         placeholder='例: A1',
@@ -125,7 +125,6 @@ class ColorPaletteView(discord.ui.View):
             mentionable=self.mentionable,
             hoist=self.hoist
         ))
-        self.stop() # モーダルを開いたらビューは役目を終える
 
 # ロール作成モーダル
 class RoleCreateModal(discord.ui.Modal, title='ロール作成'):
