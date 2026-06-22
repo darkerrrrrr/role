@@ -142,7 +142,7 @@ class RoleOptionsButtonsView(discord.ui.View):
             )
             palette_embed.set_image(url="attachment://palette.png")
             
-            await interaction.followup.send_message(
+            await interaction.followup.send(
                 embed=palette_embed,
                 file=palette_file,
                 view=ColorPaletteView(
@@ -210,7 +210,12 @@ class RoleNameModal(discord.ui.Modal, title='ロール名入力'):
         await interaction.response.send_message(
             embed=discord.Embed(
                 title="ロールオプションの選択",
-                description="作成するロールの基本的な設定を行います。\n\n**メンション可否:**\n以下のボタンで選択してください。\n\n**表示の分離:**\n以下のボタンで選択してください。\n\n両方選択後、「次へ」ボタンを押してください。",
+                description="作成するロールの基本的な設定を行います。\n\n"
+                            "--- メンション可否 ---\n"
+                            "以下のボタンで選択してください。\n\n"
+                            "--- 表示の分離 ---\n"
+                            "以下のボタンで選択してください。\n\n"
+                            "両方選択後、「次へ」ボタンを押してください。",
                 color=discord.Color.blue()
             ),
             view=RoleOptionsButtonsView(role_name=role_name),
