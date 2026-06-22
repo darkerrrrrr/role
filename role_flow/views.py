@@ -1,7 +1,48 @@
 import discord
 from palette_generator import create_palette_image, create_gradient_palette
 from src.constants import PERMISSION_TRANSLATIONS
-from .modals import ColorSelectModal
+
+# 色選択モーダル
+class ColorSelectModal(discord.ui.Modal, title='パレット識別番号入力'):
+    color_code = discord.ui.TextInput(
+        label='パレットの識別番号',
+        placeholder='例: A1',
+        required=True,
+        max_length=4,
+    )
+
+    def __init__(self, role_name: str, mentionable: bool, hoist: bool):
+        super().__init__()
+        self.role_name = role_name
+        self.mentionable = mentionable
+        self.hoist = hoist
+
+    async def on_submit(self, interaction: discord.Interaction):
+        current_palette = create_gradient_palette()
+        code = self.color_code.value.upper()
+        if code in current_palette:
+            color_hex = current_palette[code]
+            role_color_value = discord.Color.from_str(color_hex)
+
+            permission_prompt_embed = discord.Embed(
+                title="権限の選択",
+                description='次に、ロールに付与する権限を選択してください。',
+                color=role_color_value
+            )
+            await interaction.response.send_message(embed=permission_prompt_embed, view=PermissionSelectView(
+                initial_interaction=interaction,
+                role_name=self.role_name,
+                role_color=role_color_value,
+                mentionable=self.mentionable,
+                hoist=self.hoist
+            ), ephemeral=True)
+        else:
+            error_embed = discord.Embed(
+                title="エラー",
+                description="無効な識別番号です。パレットに表示されている番号を入力してください。",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=error_embed, ephemeral=True)
 
 # ロールオプションボタンビュー
 class RoleOptionsButtonsView(discord.ui.View):
