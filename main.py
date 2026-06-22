@@ -26,10 +26,10 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 async def on_ready():
     print(f'{bot.user} がログインしました')
     try:
-        synced = await bot.tree.sync()
-        print(f"{len(synced)}個のコマンドを同期しました")
         await bot.add_cog(RoleCommands(bot)) # RoleCommands Cog を追加
         print("RoleCommands Cog をロードしました")
+        synced = await bot.tree.sync()
+        print(f"{len(synced)}個のコマンドを同期しました")
     except Exception as e:
         print(f"コマンドの同期に失敗しました: {e}")
 
