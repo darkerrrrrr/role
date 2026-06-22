@@ -2,12 +2,6 @@ from PIL import Image, ImageDraw, ImageFont
 import io
 import colorsys
 
-def linear_to_srgb(c):
-    if c <= 0.0031308:
-        return c * 12.92
-    else:
-        return 1.055 * (c ** (1/2.4)) - 0.055
-
 # グラデーションパレットを生成する関数
 def create_gradient_palette():
     palette = {}
@@ -31,19 +25,8 @@ def create_gradient_palette():
             # 色相: 左から右へ均等に変化 (0.0から<1.0)
             hue = c_idx / num_cols
 
-            r_linear, g_linear, b_linear = colorsys.hls_to_rgb(hue, lightness, current_saturation)
-            
-            # sRGBガンマ補正を適用
-            r_srgb = linear_to_srgb(r_linear)
-            g_srgb = linear_to_srgb(g_linear)
-            b_srgb = linear_to_srgb(b_linear)
-
-            r, g, b = int(r_srgb * 255), int(g_srgb * 255), int(b_srgb * 255)
-            
-            # 0-255の範囲にクランプ
-            r = max(0, min(255, r))
-            g = max(0, min(255, g))
-            b = max(0, min(255, b))
+            r, g, b = colorsys.hls_to_rgb(hue, lightness, current_saturation)
+            r, g, b = int(r * 255), int(g * 255), int(b * 255)
             
             # 16進数カラーコードに変換
             hex_color = f"#{r:02X}{g:02X}{b:02X}"
