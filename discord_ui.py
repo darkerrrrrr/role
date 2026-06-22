@@ -67,6 +67,78 @@ PERMISSION_TRANSLATIONS = {
     "view_guild_insights": "サーバーインサイトを表示",
 }
 
+# ロール名入力モーダル (新しいフロー用)
+class RoleNameModal(discord.ui.Modal, title='ロール名入力'):
+    role_name = discord.ui.TextInput(
+        label='ロール名',
+        placeholder='新しいロールの名前を入力してください',
+        required=True,
+    )
+
+    def __init__(self, mentionable: bool, hoist: bool):
+        super().__init__()
+        self.mentionable = mentionable
+        self.hoist = hoist
+
+    async def on_submit(self, interaction: discord.Interaction):
+        # 色パレット画像を生成して送信
+        palette_image_buffer = create_palette_image()
+        palette_file = discord.File(fp=palette_image_buffer, filename="palette.png")
+
+        palette_embed = discord.Embed(
+            title="色の選択",
+            description="表示されたパレットから使用したい色の識別番号（例: A1）を覚えて、「色を選択」ボタンを押してください。",
+            color=discord.Color.blue()
+        )
+        palette_embed.set_image(url="attachment://palette.png")
+        
+        await interaction.response.send_message(
+            embed=palette_embed,
+            file=palette_file,
+            view=ColorPaletteView(
+                role_name=self.role_name.value,
+                mentionable=self.mentionable,
+                hoist=self.hoist
+            ), 
+            ephemeral=True
+        )
+
+
+# ロールオプション選択ビュー (新しいフロー用)
+class RoleOptionsView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=180)
+        self.mentionable_select = discord.ui.Select(
+            placeholder='このロールに対して@mentionを許可しますか？',
+            options=[
+                discord.SelectOption(label='許可する', value='true'),
+                discord.SelectOption(label='許可しない', value='false')
+            ],
+            row=0
+        )
+        self.hoist_select = discord.ui.Select(
+            placeholder='オンラインメンバーとは別にロールメンバーを表示しますか？',
+            options=[
+                discord.SelectOption(label='表示する', value='true'),
+                discord.SelectOption(label='表示しない', value='false')
+            ],
+            row=1
+        )
+        self.add_item(self.mentionable_select)
+        self.add_item(self.hoist_select)
+
+    @discord.ui.button(label='次へ', style=discord.ButtonStyle.primary, row=2)
+    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        is_mentionable = self.mentionable_select.values[0] == 'true' if self.mentionable_select.values else False
+        is_hoist = self.hoist_select.values[0] == 'true' if self.hoist_select.values else False
+
+        await interaction.response.send_modal(RoleNameModal(
+            mentionable=is_mentionable,
+            hoist=is_hoist
+        ))
+        self.stop() # View is done after sending the modal
+
+
 # 色選択モーダル
 class ColorSelectModal(discord.ui.Modal, title='パレット識別番号入力'):
     color_code = discord.ui.TextInput(
@@ -126,63 +198,7 @@ class ColorPaletteView(discord.ui.View):
             hoist=self.hoist
         ))
 
-# ロール作成モーダル
-class RoleCreateModal(discord.ui.Modal, title='ロール作成'):
-    role_name = discord.ui.TextInput(
-        label='ロール名',
-        placeholder='新しいロールの名前を入力してください',
-        required=True,
-    )
-    mentionable = discord.ui.TextInput(
-        label='このロールに対して@mentionを許可する',
-        placeholder='許可する または 許可しない を入力',
-        required=False,
-        max_length=10,
-    )
-    hoist = discord.ui.TextInput(
-        label='オンラインメンバーとは別にロールメンバーを表示する',
-        placeholder='表示する または 表示しない を入力',
-        required=False,
-        max_length=10,
-    )
 
-    async def on_submit(self, interaction: discord.Interaction):
-        # 真偽値の変換
-        mentionable_str = self.mentionable.value.lower()
-        hoist_str = self.hoist.value.lower()
-
-        is_mentionable = False
-        if mentionable_str in ['はい', 'yes', 'true', '許可する']:
-            is_mentionable = True
-        elif mentionable_str in ['いいえ', 'no', 'false', '許可しない']:
-            is_mentionable = False
-        is_hoist = False
-        if hoist_str in ['はい', 'yes', 'true', '表示する']:
-            is_hoist = True
-        elif hoist_str in ['いいえ', 'no', 'false', '表示しない']:
-            is_hoist = False
-
-        # 色パレット画像を生成して送信
-        palette_image_buffer = create_palette_image()
-        palette_file = discord.File(fp=palette_image_buffer, filename="palette.png")
-
-        palette_embed = discord.Embed(
-            title="色の選択",
-            description="表示されたパレットから使用したい色の識別番号（例: A1）を覚えて、「色を選択」ボタンを押してください。",
-            color=discord.Color.blue()
-        )
-        palette_embed.set_image(url="attachment://palette.png")
-        
-        await interaction.response.send_message(
-            embed=palette_embed,
-            file=palette_file,
-            view=ColorPaletteView(
-                role_name=self.role_name.value,
-                mentionable=is_mentionable,
-                hoist=is_hoist
-            ), 
-            ephemeral=True
-        )
 
 
 # 権限選択ドロップダウン

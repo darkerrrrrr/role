@@ -35,7 +35,15 @@ async def on_ready():
 # スラッシュコマンドの定義
 @bot.tree.command(name="createrole", description="新しいロールを作成します。")
 async def createrole(interaction: discord.Interaction):
-    await interaction.response.send_modal(RoleCreateModal())
+    await interaction.response.send_message(
+        embed=discord.Embed(
+            title="ロールオプションの選択",
+            description="ロールのオプションを選択し、「次へ」ボタンを押してください。",
+            color=discord.Color.blue()
+        ),
+        view=RoleOptionsView(),
+        ephemeral=True
+    )
 
 
 # Botの実行
