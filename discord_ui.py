@@ -69,8 +69,9 @@ PERMISSION_TRANSLATIONS = {
 
 # ロールオプションボタンビュー
 class RoleOptionsButtonsView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, role_name: str):
         super().__init__(timeout=180)
+        self.role_name = role_name
         self.mentionable = None
         self.hoist = None
 
@@ -131,10 +132,7 @@ class RoleOptionsButtonsView(discord.ui.View):
             return
 
         try:
-            await interaction.followup.send_modal(RoleNameModal(
-                mentionable=self.mentionable,
-                hoist=self.hoist
-            ))
+            await interaction.followup.send("デバッグメッセージ: ロールオプションが選択されました。次のステップに進みます。", ephemeral=True)
         finally:
             self.stop()
 
@@ -184,34 +182,19 @@ class RoleNameModal(discord.ui.Modal, title='ロール名入力'):
         required=True,
     )
 
-    def __init__(self, mentionable: bool, hoist: bool):
+    def __init__(self):
         super().__init__()
-        self.mentionable = mentionable
-        self.hoist = hoist
 
     async def on_submit(self, interaction: discord.Interaction):
         role_name = self.role_name_input.value
         
-        from palette_generator import create_palette_image
-
-        palette_image_buffer = create_palette_image()
-        palette_file = discord.File(fp=palette_image_buffer, filename="palette.png")
-
-        palette_embed = discord.Embed(
-            title="色の選択",
-            description="表示されたパレットから使用したい色の識別番号（例: A1）を覚えて、「色を選択」ボタンを押してください。",
-            color=discord.Color.blue()
-        )
-        palette_embed.set_image(url="attachment://palette.png")
-        
         await interaction.response.send_message(
-            embed=palette_embed,
-            file=palette_file,
-            view=ColorPaletteView(
-                role_name=role_name,
-                mentionable=self.mentionable,
-                hoist=self.hoist
-            ), 
+            embed=discord.Embed(
+                title="ロールオプションの選択",
+                description="作成するロールの基本的な設定を行います。\n\n「メンション可否」と「表示の分離」のボタンでそれぞれ選択し、「次へ」ボタンを押してください。",
+                color=discord.Color.blue()
+            ),
+            view=RoleOptionsButtonsView(role_name=role_name),
             ephemeral=True
         )
 
@@ -398,12 +381,4 @@ class RoleCommands(commands.Cog):
 
     @app_commands.command(name="createrole", description="新しいロールを作成します。")
     async def createrole(self, interaction: discord.Interaction):
-        await interaction.response.send_message(
-            embed=discord.Embed(
-                title="ロールオプションの選択",
-                description="作成するロールの基本的な設定を行います。以下のボタンで「メンション可否」と「表示の分離」を選択し、「次へ」ボタンを押してください。",
-                color=discord.Color.blue()
-            ),
-            view=RoleOptionsButtonsView(),
-            ephemeral=True
-        )
+        await interaction.response.send_modal(RoleNameModal())
