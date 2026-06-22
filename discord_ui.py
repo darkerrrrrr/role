@@ -30,7 +30,7 @@ PERMISSION_TRANSLATIONS = {
     "manage_guild_expressions": "絵文字・スタンプ・サウンドの管理",
     "manage_expressions": "絵文字・スタンプ・サウンドの管理",
     "manage_messages": "メッセージの管理",
-    "manage_nicknames": "ニックネームの管理",
+    "manage_nicknames": "ニックネームの変更",
     "manage_roles": "ロールの管理",
     "manage_threads": "スレッドの管理",
     "manage_webhooks": "ウェブフックの管理",
@@ -109,7 +109,7 @@ class RoleOptionsView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=180)
         self.mentionable_select = discord.ui.Select(
-            placeholder='このロールに対して@mentionを許可しますか？',
+            placeholder='このロールに対して@mentionを許可する',
             options=[
                 discord.SelectOption(label='許可する', value='true'),
                 discord.SelectOption(label='許可しない', value='false')
@@ -315,3 +315,19 @@ class PermissionSelectView(discord.ui.View):
             await interaction.followup.send(embed=error_embed, ephemeral=True)
         finally:
             self.stop()
+
+class RoleCommands(commands.Cog):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+
+    @app_commands.command(name="createrole", description="新しいロールを作成します。")
+    async def createrole(self, interaction: discord.Interaction):
+        await interaction.response.send_message(
+            embed=discord.Embed(
+                title="ロールオプションの選択",
+                description="作成するロールの基本的な設定を行います。「メンション可否」と「表示の分離」を選択し、「次へ」ボタンを押してください。",
+                color=discord.Color.blue()
+            ),
+            view=RoleOptionsView(),
+            ephemeral=True
+        )

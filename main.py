@@ -5,7 +5,7 @@ import re
 import os
 
 from palette_generator import create_gradient_palette, create_palette_image
-from discord_ui import PERMISSION_TRANSLATIONS, ColorSelectModal, ColorPaletteView, RoleOptionsView, PermissionSelect, PermissionSelectView
+from discord_ui import PERMISSION_TRANSLATIONS, ColorSelectModal, ColorPaletteView, PermissionSelect, PermissionSelectView, RoleCommands
 
 # ボットのトークン
 TOKEN = os.environ.get('DISCORD_TOKEN')
@@ -28,22 +28,10 @@ async def on_ready():
     try:
         synced = await bot.tree.sync()
         print(f"{len(synced)}個のコマンドを同期しました")
+        await bot.add_cog(RoleCommands(bot)) # RoleCommands Cog を追加
+        print("RoleCommands Cog をロードしました")
     except Exception as e:
         print(f"コマンドの同期に失敗しました: {e}")
-
-
-# スラッシュコマンドの定義
-@bot.tree.command(name="createrole", description="新しいロールを作成します。")
-async def createrole(interaction: discord.Interaction):
-    await interaction.response.send_message(
-        embed=discord.Embed(
-            title="ロールオプションの選択",
-            description="ロールのオプションを選択し、「次へ」ボタンを押してください。",
-            color=discord.Color.blue()
-        ),
-        view=RoleOptionsView(),
-        ephemeral=True
-    )
 
 
 # Botの実行
