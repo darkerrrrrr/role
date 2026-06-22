@@ -1,10 +1,4 @@
-import discord
-from discord.ext import commands
-from discord import app_commands
-
-from palette_generator import create_gradient_palette, create_palette_image
-from role_views import RoleOptionsButtonsView # 新しく作成したファイルからインポート
-from role_modals import RoleNameModal as NewRoleNameModal # 新しく作成したファイルからインポート
+# src/constants.py
 
 # 権限の日本語訳
 PERMISSION_TRANSLATIONS = {
@@ -68,27 +62,3 @@ PERMISSION_TRANSLATIONS = {
     "view_creator_monetization_analytics": "サーバーの収益化分析を表示",
     "view_guild_insights": "サーバーインサイトを表示",
 }
-
-
-
-class RoleCommands(commands.Cog):
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
-
-    @app_commands.command(name="createrole", description="新しいロールを作成します。")
-    async def createrole(self, interaction: discord.Interaction):
-        # 最初にメンション可否と表示分離の選択肢を提示
-        await interaction.response.send_message(
-            embed=discord.Embed(
-                title="ロールオプションの選択",
-                description="作成するロールの基本的な設定を行います。\n\n"
-                            "--- メンション可否 ---\n"
-                            "以下のボタンで選択してください。\n\n"
-                            "--- 表示の分離 ---\n"
-                            "以下のボタンで選択してください。\n\n"
-                            "両方選択後、「次へ」ボタンを押してください。",
-                color=discord.Color.blue()
-            ),
-            view=RoleOptionsButtonsView(role_name="一時的なロール名"), # ロール名は後でモーダルで入力される
-            ephemeral=True
-        )
