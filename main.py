@@ -4,8 +4,8 @@ from discord import app_commands
 import re
 import os
 
-from palette_generator import create_gradient_palette, create_palette_image
-from discord_ui import PERMISSION_TRANSLATIONS, ColorSelectModal, ColorPaletteView, PermissionSelect, PermissionSelectView, RoleCommands, RoleOptionsButtonsView
+from src.cogs import RoleCommands # RoleCommands Cog のみインポート
+# PERMISSION_TRANSLATIONS は main.py で直接使用しないため、インポート不要
 
 # ボットのトークン
 TOKEN = os.environ.get('DISCORD_TOKEN')

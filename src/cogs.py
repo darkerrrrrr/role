@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-from src.modals import RoleNameModal
+from role_flow.modals import RoleNameModal
 
 class RoleCommands(commands.Cog):
     def __init__(self, bot: commands.Bot):
