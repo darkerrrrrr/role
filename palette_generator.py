@@ -37,8 +37,14 @@ def create_gradient_palette():
             
     return palette
 
+_cached_palette_image = None
+
 # 色パレット画像を生成する関数
 def create_palette_image():
+    global _cached_palette_image
+    if _cached_palette_image:
+        _cached_palette_image.seek(0) # バッファの読み取り位置を先頭に戻す
+        return _cached_palette_image
     COLOR_PALETTE = create_gradient_palette() # 動的にパレットを生成
     cell_size = 60
     margin = 5
@@ -91,4 +97,5 @@ def create_palette_image():
     buffer = io.BytesIO()
     img.save(buffer, format='PNG')
     buffer.seek(0)
+    _cached_palette_image = buffer # キャッシュに保存
     return buffer
