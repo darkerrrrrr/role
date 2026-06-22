@@ -5,7 +5,7 @@ import re
 import os
 
 from palette_generator import create_gradient_palette, create_palette_image
-from discord_ui import PERMISSION_TRANSLATIONS, ColorSelectModal, ColorPaletteView, PermissionSelect, PermissionSelectView, RoleCommands
+from discord_ui import PERMISSION_TRANSLATIONS, ColorSelectModal, ColorPaletteView, PermissionSelect, PermissionSelectView, RoleCommands, RoleOptionsButtonsView
 
 # ボットのトークン
 TOKEN = os.environ.get('DISCORD_TOKEN')

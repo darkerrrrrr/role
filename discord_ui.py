@@ -67,6 +67,78 @@ PERMISSION_TRANSLATIONS = {
     "view_guild_insights": "サーバーインサイトを表示",
 }
 
+# ロールオプションボタンビュー
+class RoleOptionsButtonsView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=180)
+        self.mentionable = None
+        self.hoist = None
+
+        # Mentionable buttons
+        self.mentionable_true_btn = discord.ui.Button(label='@mentionを許可する', style=discord.ButtonStyle.grey, custom_id='mentionable_true', row=0)
+        self.mentionable_false_btn = discord.ui.Button(label='@mentionを許可しない', style=discord.ButtonStyle.grey, custom_id='mentionable_false', row=0)
+        self.mentionable_true_btn.callback = self.mentionable_true_callback
+        self.mentionable_false_btn.callback = self.mentionable_false_callback
+        self.add_item(self.mentionable_true_btn)
+        self.add_item(self.mentionable_false_btn)
+
+        # Hoist buttons
+        self.hoist_true_btn = discord.ui.Button(label='オンラインメンバーとは別にロールメンバーを表示する', style=discord.ButtonStyle.grey, custom_id='hoist_true', row=1)
+        self.hoist_false_btn = discord.ui.Button(label='オンラインメンバーとは別にロールメンバーを表示しない', style=discord.ButtonStyle.grey, custom_id='hoist_false', row=1)
+        self.hoist_true_btn.callback = self.hoist_true_callback
+        self.hoist_false_btn.callback = self.hoist_false_callback
+        self.add_item(self.hoist_true_btn)
+        self.add_item(self.hoist_false_btn)
+
+        # Next button
+        self.next_btn = discord.ui.Button(label='次へ', style=discord.ButtonStyle.primary, row=2)
+        self.next_btn.callback = self.next_button_callback
+        self.add_item(self.next_btn)
+
+    async def mentionable_true_callback(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        self.mentionable = True
+        self.mentionable_true_btn.style = discord.ButtonStyle.green
+        self.mentionable_false_btn.style = discord.ButtonStyle.grey
+        await interaction.edit_original_response(view=self)
+
+    async def mentionable_false_callback(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        self.mentionable = False
+        self.mentionable_true_btn.style = discord.ButtonStyle.grey
+        self.mentionable_false_btn.style = discord.ButtonStyle.green
+        await interaction.edit_original_response(view=self)
+
+    async def hoist_true_callback(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        self.hoist = True
+        self.hoist_true_btn.style = discord.ButtonStyle.green
+        self.hoist_false_btn.style = discord.ButtonStyle.grey
+        await interaction.edit_original_response(view=self)
+
+    async def hoist_false_callback(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        self.hoist = False
+        self.hoist_true_btn.style = discord.ButtonStyle.grey
+        self.hoist_false_btn.style = discord.ButtonStyle.green
+        await interaction.edit_original_response(view=self)
+
+    async def next_button_callback(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+
+        if self.mentionable is None or self.hoist is None:
+            await interaction.followup.send("「メンション可否」と「表示の分離」の両方を選択してください。", ephemeral=True)
+            return
+
+        try:
+            await interaction.followup.send_modal(RoleNameModal(
+                mentionable=self.mentionable,
+                hoist=self.hoist
+            ))
+        finally:
+            self.stop()
+
+
 # ロール名入力モーダル (新しいフロー用)
 class RoleNameModal(discord.ui.Modal, title='ロール名入力'):
     role_name = discord.ui.TextInput(
@@ -104,40 +176,7 @@ class RoleNameModal(discord.ui.Modal, title='ロール名入力'):
         )
 
 
-# ロールオプション選択ビュー (新しいフロー用)
-class RoleOptionsView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=180)
-        self.mentionable_select = discord.ui.Select(
-            placeholder='このロールに対して@mentionを許可する',
-            options=[
-                discord.SelectOption(label='許可する', value='true'),
-                discord.SelectOption(label='許可しない', value='false')
-            ],
-            row=0
-        )
-        self.hoist_select = discord.ui.Select(
-            placeholder='オンラインメンバーとは別にロールメンバーを表示する',
-            options=[
-                discord.SelectOption(label='表示する', value='true'),
-                discord.SelectOption(label='表示しない', value='false')
-            ],
-            row=1
-        )
-        self.add_item(self.mentionable_select)
-        self.add_item(self.hoist_select)
-
-    @discord.ui.button(label='次へ', style=discord.ButtonStyle.primary, row=2)
-    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer(ephemeral=True)
-
-        try:
-            await interaction.followup.send("デバッグメッセージ: 次のステップへ進む準備ができました。", ephemeral=True)
-        finally:
-            self.stop() # View is done after sending the modal
-
-
-# ロール名入力モーダル (RoleOptionsViewの後に表示)
+# ロール名入力モーダル
 class RoleNameModal(discord.ui.Modal, title='ロール名入力'):
     role_name_input = discord.ui.TextInput(
         label='ロール名',
@@ -153,7 +192,6 @@ class RoleNameModal(discord.ui.Modal, title='ロール名入力'):
     async def on_submit(self, interaction: discord.Interaction):
         role_name = self.role_name_input.value
         
-        # create_palette_image は palette_generator からインポートされていることを確認
         from palette_generator import create_palette_image
 
         palette_image_buffer = create_palette_image()
@@ -363,9 +401,9 @@ class RoleCommands(commands.Cog):
         await interaction.response.send_message(
             embed=discord.Embed(
                 title="ロールオプションの選択",
-                description="作成するロールの基本的な設定を行います。「メンション可否」と「表示の分離」を選択し、「次へ」ボタンを押してください。",
+                description="作成するロールの基本的な設定を行います。以下のボタンで「メンション可否」と「表示の分離」を選択し、「次へ」ボタンを押してください。",
                 color=discord.Color.blue()
             ),
-            view=RoleOptionsView(),
+            view=RoleOptionsButtonsView(),
             ephemeral=True
         )
