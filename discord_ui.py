@@ -117,7 +117,7 @@ class RoleOptionsView(discord.ui.View):
             row=0
         )
         self.hoist_select = discord.ui.Select(
-            placeholder='オンラインメンバーとは別にロールメンバーを表示しますか？',
+            placeholder='オンラインメンバーとは別にロールメンバーを表示する',
             options=[
                 discord.SelectOption(label='表示する', value='true'),
                 discord.SelectOption(label='表示しない', value='false')
