@@ -11,7 +11,7 @@ def linear_to_srgb(c):
 # グラデーションパレットを生成する関数
 def create_gradient_palette():
     palette = {}
-    row_chars = "ABCDEFGHIJKLMNOPQRST" # 20行分の識別子
+    row_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" # Zまで拡張
     num_rows = len(row_chars) # 明度と彩度変化用 (縦軸)
     num_cols = 20 # 色相変化用 (横軸)
 
