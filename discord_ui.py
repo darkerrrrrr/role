@@ -131,11 +131,10 @@ class RoleOptionsView(discord.ui.View):
     async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.defer(ephemeral=True)
 
-        is_mentionable = self.mentionable_select.values[0] == 'true' if self.mentionable_select.values else False
-        is_hoist = self.hoist_select.values[0] == 'true' if self.hoist_select.values else False
-
-        await interaction.followup.send("デバッグメッセージ: 次のステップへ進みます。mentionable=" + str(is_mentionable) + ", hoist=" + str(is_hoist), ephemeral=True)
-        self.stop() # View is done after sending the modal
+        try:
+            await interaction.followup.send("デバッグメッセージ: 次のステップへ進む準備ができました。", ephemeral=True)
+        finally:
+            self.stop() # View is done after sending the modal
 
 
 # ロール名入力モーダル (RoleOptionsViewの後に表示)
