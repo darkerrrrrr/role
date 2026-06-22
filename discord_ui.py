@@ -365,8 +365,8 @@ class PermissionSelectView(discord.ui.View):
             )
             success_embed.add_field(name="ロール名", value=new_role.name, inline=True)
             success_embed.add_field(name="カラー", value=str(new_role.color), inline=True)
-            success_embed.add_field(name="このロールに対して@mentionを許可する", value="許可する" if new_role.mentionable else "許可しない", inline=True)
-            success_embed.add_field(name="オンラインメンバーとは別にロールメンバーを表示する", value="表示する" if new_role.hoist else "表示しない", inline=True)
+            success_embed.add_field(name="メンション可否", value="`@mentionを許可する`" if new_role.mentionable else "`@mentionを許可しない`", inline=True)
+            success_embed.add_field(name="表示の分離", value="`オンラインメンバーとは別にロールメンバーを表示する`" if new_role.hoist else "`オンラインメンバーとは別にロールメンバーを表示しない`", inline=True)
             success_embed.add_field(name="付与された権限数", value=f"{len(selected_permissions)}個", inline=False)
 
             # 選択された権限のリストを作成
